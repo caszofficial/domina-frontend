@@ -115,6 +115,15 @@ function Dashboard () {
     }
   }
 
+  const displayName = useMemo(() => {
+    if (!user) return ''
+
+    const name = typeof user.name === 'string' ? user.name.trim() : ''
+    if (name) return name
+
+    return typeof user.email === 'string' ? user.email : ''
+  }, [user])
+
   const filteredTasks = useMemo(() => {
     if (filter === 'completed') {
       return tasks.filter((task) => Boolean(task.completed))
@@ -132,7 +141,7 @@ function Dashboard () {
       <header className="topbar">
         <div>
           <h1>Panel de tareas</h1>
-          <p>Bienvenido, {user?.email}</p>
+          <p>Bienvenido, {displayName || 'usuario'}</p>
         </div>
         <button className="button ghost" onClick={logout}>
           Cerrar sesión
