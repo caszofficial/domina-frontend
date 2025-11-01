@@ -12,6 +12,7 @@ class ApiError extends Error {
 async function request (url, options = {}) {
   const response = await fetch(url, {
     ...options,
+    cache: 'no-store',
     headers: {
       ...apiConfig.defaultHeaders,
       ...(options.headers || {})
