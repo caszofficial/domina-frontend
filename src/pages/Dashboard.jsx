@@ -49,15 +49,34 @@ function Dashboard () {
   const handleUpdateTask = async (values) => {
     if (!selectedTask) return
     setSaving(true)
+
+    const taskId = selectedTask.id || selectedTask._id
+    const previousTasks = tasks
+
+    setTasks((prev) => prev.map((task) => {
+      const id = task.id || task._id
+      return id === taskId ? { ...task, ...values } : task
+    }))
+
     try {
-      const updated = await client.update(selectedTask.id || selectedTask._id, values)
-      setTasks((prev) => prev.map((task) => {
-        const id = task.id || task._id
-        return id === (selectedTask.id || selectedTask._id) ? { ...task, ...updated } : task
-      }))
+      const updated = await client.update(taskId, values)
+
+      if (updated && typeof updated === 'object') {
+        setTasks((prev) => prev.map((task) => {
+          const id = task.id || task._id
+          if (id !== taskId) return task
+
+          const completedValue =
+            typeof updated.completed === 'boolean' ? updated.completed : task.completed
+
+          return { ...task, ...updated, completed: completedValue }
+        }))
+      }
+
       setSelectedTask(null)
       setError(null)
     } catch (err) {
+      setTasks(previousTasks)
       setError(err.message || 'No se pudo actualizar la tarea')
     } finally {
       setSaving(false)
