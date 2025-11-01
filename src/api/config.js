@@ -1,9 +1,8 @@
-const AUTH_SERVICE_URL = import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:4000'
-const TASKS_SERVICE_URL = import.meta.env.VITE_TASKS_SERVICE_URL || 'http://localhost:5000'
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000').replace(/\/$/, '')
 
 export const apiConfig = {
-  authBaseUrl: AUTH_SERVICE_URL.replace(/\/$/, ''),
-  tasksBaseUrl: TASKS_SERVICE_URL.replace(/\/$/, ''),
+  authBaseUrl: `${API_BASE_URL}/api/users`,
+  tasksBaseUrl: `${API_BASE_URL}/api/tasks`,
   defaultHeaders: {
     'Content-Type': 'application/json'
   }

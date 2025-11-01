@@ -1,12 +1,12 @@
 import { apiConfig } from './config.js'
-import { withAuth } from './client.js'
+import { withBasicAuth } from './client.js'
 
 const routes = {
-  tasks: () => `${apiConfig.tasksBaseUrl}/tasks`
+  tasks: () => apiConfig.tasksBaseUrl
 }
 
 export function createTasksClient (token) {
-  const client = withAuth(token)
+  const client = withBasicAuth(token)
 
   return {
     async list () {

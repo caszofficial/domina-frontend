@@ -1,9 +1,21 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
-import { loginUser, registerUser, refreshSession } from '../api/auth.js'
+import { loginUser, registerUser, verifyUser } from '../api/auth.js'
 
 const AuthContext = createContext()
 
-const TOKEN_STORAGE_KEY = 'domina_auth_token'
+const TOKEN_STORAGE_KEY = 'domina_basic_token'
+
+const createBasicToken = ({ email, password }) => {
+  if (!email || !password) {
+    throw new Error('El correo y la contraseña son obligatorios')
+  }
+  return window.btoa(`${email}:${password}`)
+}
+
+async function fetchUserWithToken (token) {
+  if (!token) return null
+  return verifyUser(token)
+}
 
 export function AuthProvider ({ children }) {
   const [token, setToken] = useState(null)
@@ -18,14 +30,10 @@ export function AuthProvider ({ children }) {
       return
     }
 
-    refreshSession(storedToken)
-      .then((session) => {
-        const nextToken = session.token || storedToken
-        setToken(nextToken)
-        setUser(session.user)
-        if (session.token) {
-          window.localStorage.setItem(TOKEN_STORAGE_KEY, session.token)
-        }
+    fetchUserWithToken(storedToken)
+      .then((userData) => {
+        setToken(storedToken)
+        setUser(userData)
       })
       .catch(() => {
         window.localStorage.removeItem(TOKEN_STORAGE_KEY)
@@ -33,40 +41,44 @@ export function AuthProvider ({ children }) {
       .finally(() => setLoading(false))
   }, [])
 
-  const handleAuthResult = useCallback((result) => {
-    setToken(result.token)
-    setUser(result.user)
-    window.localStorage.setItem(TOKEN_STORAGE_KEY, result.token)
+  const persistSession = useCallback((basicToken, userData) => {
+    setToken(basicToken)
+    setUser(userData)
+    window.localStorage.setItem(TOKEN_STORAGE_KEY, basicToken)
     setError(null)
   }, [])
 
   const login = useCallback(async (credentials) => {
     setLoading(true)
     try {
-      const result = await loginUser(credentials)
-      handleAuthResult(result)
-      return result
+      const basicToken = createBasicToken(credentials)
+      await loginUser(basicToken)
+      const userData = await fetchUserWithToken(basicToken)
+      persistSession(basicToken, userData)
+      return { token: basicToken, user: userData }
     } catch (err) {
       setError(err.message || 'No se pudo iniciar sesión')
       throw err
     } finally {
       setLoading(false)
     }
-  }, [handleAuthResult])
+  }, [persistSession])
 
   const register = useCallback(async (payload) => {
     setLoading(true)
     try {
-      const result = await registerUser(payload)
-      handleAuthResult(result)
-      return result
+      await registerUser(payload)
+      const basicToken = createBasicToken(payload)
+      const userData = await fetchUserWithToken(basicToken)
+      persistSession(basicToken, userData)
+      return { token: basicToken, user: userData }
     } catch (err) {
       setError(err.message || 'No se pudo crear el usuario')
       throw err
     } finally {
       setLoading(false)
     }
-  }, [handleAuthResult])
+  }, [persistSession])
 
   const logout = useCallback(() => {
     setToken(null)

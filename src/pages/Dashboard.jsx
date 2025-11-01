@@ -89,7 +89,7 @@ function Dashboard () {
       <header className="topbar">
         <div>
           <h1>Panel de tareas</h1>
-          <p>Bienvenido, {user?.name || user?.email}</p>
+          <p>Bienvenido, {user?.email}</p>
         </div>
         <button className="button ghost" onClick={logout}>
           Cerrar sesión

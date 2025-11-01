@@ -2,15 +2,17 @@ import { apiConfig } from './config.js'
 import { request } from './client.js'
 
 const routes = {
-  login: () => `${apiConfig.authBaseUrl}/auth/login`,
-  register: () => `${apiConfig.authBaseUrl}/auth/register`,
-  refresh: () => `${apiConfig.authBaseUrl}/auth/refresh`
+  login: () => `${apiConfig.authBaseUrl}/login`,
+  register: () => `${apiConfig.authBaseUrl}/register`,
+  verify: () => `${apiConfig.authBaseUrl}/verify`
 }
 
-export async function loginUser (credentials) {
+export async function loginUser (basicToken) {
   return request(routes.login(), {
     method: 'POST',
-    body: JSON.stringify(credentials)
+    headers: {
+      Authorization: `Basic ${basicToken}`
+    }
   })
 }
 
@@ -21,11 +23,10 @@ export async function registerUser (payload) {
   })
 }
 
-export async function refreshSession (token) {
-  return request(routes.refresh(), {
-    method: 'POST',
+export async function verifyUser (basicToken) {
+  return request(routes.verify(), {
     headers: {
-      Authorization: `Bearer ${token}`
+      Authorization: `Basic ${basicToken}`
     }
   })
 }

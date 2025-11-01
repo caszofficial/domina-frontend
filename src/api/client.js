@@ -34,12 +34,12 @@ async function request (url, options = {}) {
   return data
 }
 
-export function withAuth (token) {
+export function withBasicAuth (token) {
   return {
     async get (path) {
       return request(path, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Basic ${token}`
         }
       })
     },
@@ -48,7 +48,7 @@ export function withAuth (token) {
         method: 'POST',
         body: JSON.stringify(body),
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Basic ${token}`
         }
       })
     },
@@ -57,7 +57,7 @@ export function withAuth (token) {
         method: 'PUT',
         body: JSON.stringify(body),
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Basic ${token}`
         }
       })
     },
@@ -65,7 +65,7 @@ export function withAuth (token) {
       return request(path, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Basic ${token}`
         }
       })
     }
