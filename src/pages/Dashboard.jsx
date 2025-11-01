@@ -78,14 +78,31 @@ function Dashboard () {
   }
 
   const handleToggleTask = async (task, completed) => {
+    const taskId = task.id || task._id
+    const previousValue = task.completed
+
+    setTasks((prev) => prev.map((item) => {
+      const id = item.id || item._id
+      return id === taskId ? { ...item, completed } : item
+    }))
+
     try {
-      const updated = await client.update(task.id || task._id, { completed })
+      const updated = await client.update(taskId, { completed })
       setTasks((prev) => prev.map((item) => {
         const id = item.id || item._id
-        return id === (task.id || task._id) ? { ...item, ...updated } : item
+        if (id !== taskId) return item
+
+        const completedValue =
+          typeof updated?.completed === 'boolean' ? updated.completed : completed
+
+        return { ...item, ...updated, completed: completedValue }
       }))
       setError(null)
     } catch (err) {
+      setTasks((prev) => prev.map((item) => {
+        const id = item.id || item._id
+        return id === taskId ? { ...item, completed: previousValue } : item
+      }))
       setError(err.message || 'No se pudo actualizar el estado de la tarea')
     }
   }

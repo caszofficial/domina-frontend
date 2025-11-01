@@ -24,9 +24,18 @@ function TaskForm ({ onSubmit, loading, onCancel, task }) {
     setValues((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    onSubmit(values)
+
+    try {
+      await onSubmit(values)
+
+      if (!task) {
+        setValues(initialState)
+      }
+    } catch (_error) {
+      // El componente contenedor se encarga de manejar los errores.
+    }
   }
 
   return (
