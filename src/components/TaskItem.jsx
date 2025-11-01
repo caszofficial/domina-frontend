@@ -1,7 +1,4 @@
-function TaskItem ({ task, onEdit, onDelete }) {
-  const dueDate = task.dueDate ? new Date(task.dueDate) : null
-  const formattedDate = dueDate ? dueDate.toLocaleDateString() : 'Sin fecha'
-
+function TaskItem ({ task, onEdit, onDelete, onToggle }) {
   return (
     <article className="task-item">
       <header>
@@ -12,9 +9,14 @@ function TaskItem ({ task, onEdit, onDelete }) {
       </header>
       {task.description && <p className="description">{task.description}</p>}
       <footer>
-        <div className="meta">
-          <span>Vence: {formattedDate}</span>
-        </div>
+        <label className="toggle">
+          <input
+            type="checkbox"
+            checked={Boolean(task.completed)}
+            onChange={(event) => onToggle?.(task, event.target.checked)}
+          />
+          <span>Marcar como {task.completed ? 'pendiente' : 'completada'}</span>
+        </label>
         <div className="actions">
           <button className="button ghost" onClick={() => onEdit(task)}>
             Editar

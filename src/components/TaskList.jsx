@@ -1,6 +1,6 @@
 import TaskItem from './TaskItem.jsx'
 
-function TaskList ({ tasks, onEdit, onDelete, loading }) {
+function TaskList ({ tasks, onEdit, onDelete, onToggle, loading }) {
   if (loading) {
     return (
       <div className="card centered">
@@ -26,6 +26,7 @@ function TaskList ({ tasks, onEdit, onDelete, loading }) {
           task={task}
           onEdit={onEdit}
           onDelete={onDelete}
+          onToggle={onToggle}
         />
       ))}
     </div>

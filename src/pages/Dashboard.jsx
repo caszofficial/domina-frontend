@@ -11,6 +11,7 @@ function Dashboard () {
   const [saving, setSaving] = useState(false)
   const [selectedTask, setSelectedTask] = useState(null)
   const [error, setError] = useState(null)
+  const [filter, setFilter] = useState('all')
 
   const client = useMemo(() => createTasksClient(token), [token])
 
@@ -76,6 +77,19 @@ function Dashboard () {
     }
   }
 
+  const handleToggleTask = async (task, completed) => {
+    try {
+      const updated = await client.update(task.id || task._id, { completed })
+      setTasks((prev) => prev.map((item) => {
+        const id = item.id || item._id
+        return id === (task.id || task._id) ? { ...item, ...updated } : item
+      }))
+      setError(null)
+    } catch (err) {
+      setError(err.message || 'No se pudo actualizar el estado de la tarea')
+    }
+  }
+
   const handleSubmit = async (values) => {
     if (selectedTask) {
       await handleUpdateTask(values)
@@ -83,6 +97,18 @@ function Dashboard () {
       await handleCreateTask(values)
     }
   }
+
+  const filteredTasks = useMemo(() => {
+    if (filter === 'completed') {
+      return tasks.filter((task) => Boolean(task.completed))
+    }
+
+    if (filter === 'pending') {
+      return tasks.filter((task) => !task.completed)
+    }
+
+    return tasks
+  }, [tasks, filter])
 
   return (
     <div className="dashboard">
@@ -112,11 +138,35 @@ function Dashboard () {
               {loading ? 'Actualizando...' : 'Actualizar'}
             </button>
           </div>
+          <div className="filters">
+            <button
+              type="button"
+              className={`chip ${filter === 'all' ? 'active' : ''}`}
+              onClick={() => setFilter('all')}
+            >
+              Todas
+            </button>
+            <button
+              type="button"
+              className={`chip ${filter === 'pending' ? 'active' : ''}`}
+              onClick={() => setFilter('pending')}
+            >
+              Pendientes
+            </button>
+            <button
+              type="button"
+              className={`chip ${filter === 'completed' ? 'active' : ''}`}
+              onClick={() => setFilter('completed')}
+            >
+              Completadas
+            </button>
+          </div>
           <TaskList
-            tasks={tasks}
+            tasks={filteredTasks}
             loading={loading}
             onEdit={setSelectedTask}
             onDelete={handleDeleteTask}
+            onToggle={handleToggleTask}
           />
         </section>
       </div>

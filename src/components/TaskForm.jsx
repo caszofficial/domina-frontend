@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react'
 
 const initialState = {
   title: '',
-  description: '',
-  dueDate: ''
+  description: ''
 }
 
 function TaskForm ({ onSubmit, loading, onCancel, task }) {
@@ -13,8 +12,7 @@ function TaskForm ({ onSubmit, loading, onCancel, task }) {
     if (task) {
       setValues({
         title: task.title || '',
-        description: task.description || '',
-        dueDate: task.dueDate ? task.dueDate.slice(0, 10) : ''
+        description: task.description || ''
       })
     } else {
       setValues(initialState)
@@ -28,7 +26,7 @@ function TaskForm ({ onSubmit, loading, onCancel, task }) {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    onSubmit({ ...values, dueDate: values.dueDate || null })
+    onSubmit(values)
   }
 
   return (
@@ -53,15 +51,6 @@ function TaskForm ({ onSubmit, loading, onCancel, task }) {
           onChange={handleChange}
           rows="3"
           placeholder="Detalles adicionales"
-        />
-      </label>
-      <label className="form-field">
-        <span>Fecha límite</span>
-        <input
-          type="date"
-          name="dueDate"
-          value={values.dueDate}
-          onChange={handleChange}
         />
       </label>
       <div className="form-actions">

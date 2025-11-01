@@ -10,11 +10,10 @@ Aplicación React para gestionar usuarios y tareas consumiendo los microservicio
 ## Configuración
 
 1. Copia el archivo `.env.example` y renómbralo a `.env`.
-2. Ajusta las variables con las URL reales de tus microservicios:
+2. Ajusta la URL base hacia tu backend (la aplicación consumirá `/api/users` y `/api/tasks` desde ahí):
 
 ```env
-VITE_AUTH_SERVICE_URL=http://localhost:4000
-VITE_TASKS_SERVICE_URL=http://localhost:5000
+VITE_API_BASE_URL=http://localhost:3000
 ```
 
 ## Scripts disponibles
@@ -29,9 +28,9 @@ npm run preview   # sirve la build generada
 ## Arquitectura
 
 - `src/context/AuthContext.jsx`: maneja el estado global de autenticación.
-- `src/api/*`: clientes para los microservicios de autenticación y tareas.
+- `src/api/*`: clientes para los microservicios de autenticación (Basic Auth) y tareas.
 - `src/pages/AuthPage.jsx`: flujo de registro e inicio de sesión.
 - `src/pages/Dashboard.jsx`: CRUD de tareas autenticado.
 - `src/components/*`: componentes reutilizables para formularios y listados.
 
-La aplicación usa `localStorage` para persistir el token JWT y se integra con los microservicios mediante solicitudes HTTP.
+La aplicación usa `localStorage` para persistir el token de autenticación Basic y se integra con los microservicios mediante solicitudes HTTP.
