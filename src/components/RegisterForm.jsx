@@ -16,7 +16,11 @@ function RegisterForm ({ onSubmit, loading }) {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    onSubmit(values)
+    const payload = {
+      ...values,
+      name: values.name.trim()
+    }
+    onSubmit(payload)
   }
 
   return (
@@ -30,6 +34,7 @@ function RegisterForm ({ onSubmit, loading }) {
           value={values.name}
           onChange={handleChange}
           placeholder="Tu nombre"
+          autoComplete="name"
           required
         />
       </label>
@@ -41,6 +46,7 @@ function RegisterForm ({ onSubmit, loading }) {
           value={values.email}
           onChange={handleChange}
           placeholder="tu@correo.com"
+          autoComplete="email"
           required
         />
       </label>
@@ -53,6 +59,7 @@ function RegisterForm ({ onSubmit, loading }) {
           onChange={handleChange}
           placeholder="••••••••"
           minLength="6"
+          autoComplete="new-password"
           required
         />
       </label>
